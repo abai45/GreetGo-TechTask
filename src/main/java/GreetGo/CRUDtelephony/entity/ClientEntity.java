@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="clients")
-public class ClientEntity {
+public class ClientEntity extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +23,4 @@ public class ClientEntity {
     private String phone;
     private String secondPhone;
     private String birthday;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
 }

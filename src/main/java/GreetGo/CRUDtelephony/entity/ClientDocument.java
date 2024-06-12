@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-public class ClientDocument {
+public class ClientDocument extends Auditable{
     @Id
     private String id;
     private String firstName;
@@ -24,6 +24,4 @@ public class ClientDocument {
     private String phone;
     private String secondPhone;
     private String birthday;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
 }

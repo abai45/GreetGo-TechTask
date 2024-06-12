@@ -2,12 +2,17 @@ package GreetGo.CRUDtelephony.service.impl;
 
 import GreetGo.CRUDtelephony.dto.ClientDocumentDto;
 import GreetGo.CRUDtelephony.dto.ClientEntityDto;
+import GreetGo.CRUDtelephony.entity.AuditDocument;
+import GreetGo.CRUDtelephony.entity.AuditEntity;
 import GreetGo.CRUDtelephony.entity.ClientDocument;
 import GreetGo.CRUDtelephony.entity.ClientEntity;
+import GreetGo.CRUDtelephony.enumeration.OperationEnum;
 import GreetGo.CRUDtelephony.exception.ApiException;
 import GreetGo.CRUDtelephony.mapper.ClientDocumentMapper;
 import GreetGo.CRUDtelephony.mapper.ClientEntityMapper;
+import GreetGo.CRUDtelephony.repository.mongodb.AuditingMongoRepository;
 import GreetGo.CRUDtelephony.repository.mongodb.ClientMongoRepository;
+import GreetGo.CRUDtelephony.repository.psql.AuditingPsqlRepository;
 import GreetGo.CRUDtelephony.repository.psql.ClientRepository;
 import GreetGo.CRUDtelephony.service.ClientService;
 import jakarta.transaction.Transactional;
@@ -15,8 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.time.LocalDateTime.*;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -24,36 +32,47 @@ public class ClientServiceImpl implements ClientService {
     private ClientRepository clientRepository;
     @Autowired
     private ClientMongoRepository clientMongoRepository;
+    @Autowired
+    private AuditingPsqlRepository auditingPsqlRepository;
+    @Autowired
+    private AuditingMongoRepository auditingMongoRepository;
 
     //PostgreSQL methods
     @Override
     public ClientEntityDto createClient(ClientEntityDto dto) {
         var clientEntity = ClientEntityMapper.INSTANCE.toEntity(dto);
         clientRepository.save(clientEntity);
+        newOperationAudit(clientEntity, OperationEnum.CREATE.getValue());
         return convertEntityToDto(clientEntity);
     }
 
     @Override
     public ClientEntityDto getClientById(Long id) {
         var clientEntity = findClientEntityById(id);
+        newOperationAudit(clientEntity, OperationEnum.READ.getValue());
         return convertEntityToDto(clientEntity);
     }
 
     @Override
     public ClientEntityDto getClientByPhone(String phone) {
         var clientEntity = findClientEntityByPhone(phone);
+        newOperationAudit(clientEntity, OperationEnum.READ.getValue());
         return convertEntityToDto(clientEntity);
     }
 
     @Override
     public void deleteClientById(Long id) {
+        var clientEntity = findClientEntityById(id);
         clientRepository.deleteById(id);
+        newOperationAudit(clientEntity, OperationEnum.DELETE.getValue());
     }
 
     @Override
     @Transactional
     public void deleteClientByPhone(String phone) {
+        var clientEntity = findClientEntityByPhone(phone);
         clientRepository.deleteByPhone(phone);
+        newOperationAudit(clientEntity, OperationEnum.DELETE.getValue());
     }
 
     @Override
@@ -67,6 +86,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientEntityDto updateClientById(Long id, ClientEntityDto newClientInfo) {
         var clientEntity = findClientEntityById(id);
         updateClientEntity(clientEntity, newClientInfo);
+        newOperationAudit(clientEntity, OperationEnum.UPDATE.getValue());
         return convertEntityToDto(clientEntity);
     }
 
@@ -74,6 +94,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientEntityDto updateClientByPhone(String phone, ClientEntityDto newClientInfo) {
         var clientEntity = findClientEntityByPhone(phone);
         updateClientEntity(clientEntity, newClientInfo);
+        newOperationAudit(clientEntity, OperationEnum.UPDATE.getValue());
         return convertEntityToDto(clientEntity);
     }
 
@@ -100,34 +121,45 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(clientEntity);
     }
 
+    private void newOperationAudit(ClientEntity clientEntity, String operationType) {
+        auditingPsqlRepository.save(new AuditEntity(null, clientEntity, now(), operationType));
+    }
+
     //MongoDb methods
     @Override
     public ClientDocumentDto createClient(ClientDocumentDto dto) {
         var clientDocument = ClientDocumentMapper.INSTANCE.toDocument(dto);
         clientMongoRepository.save(clientDocument);
+        newOperationAuditMongo(clientDocument, OperationEnum.CREATE.getValue());
         return convertDocumentToDto(clientDocument);
     }
 
     @Override
     public ClientDocumentDto getDocumentById(String id) {
         var clientDocument = findClientDocumentById(id);
+        newOperationAuditMongo(clientDocument, OperationEnum.READ.getValue());
         return convertDocumentToDto(clientDocument);
     }
 
     @Override
     public ClientDocumentDto getDocumentByPhone(String phone) {
         var clientDocument = findClientDocumentByPhone(phone);
+        newOperationAuditMongo(clientDocument, OperationEnum.READ.getValue());
         return convertDocumentToDto(clientDocument);
     }
 
     @Override
     public void deleteDocumentById(String id) {
+        var clientDocument = findClientDocumentById(id);
         clientMongoRepository.deleteById(id);
+        newOperationAuditMongo(clientDocument, OperationEnum.DELETE.getValue());
     }
 
     @Override
     public void deleteDocumentByPhone(String phone) {
+        var clientDocument = findClientDocumentByPhone(phone);
         clientMongoRepository.deleteByPhone(phone);
+        newOperationAuditMongo(clientDocument, OperationEnum.DELETE.getValue());
     }
 
     @Override
@@ -141,6 +173,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientDocumentDto updateDocumentById(String id, ClientDocumentDto dto) {
         var clientDocument = findClientDocumentById(id);
         updateClientDocument(clientDocument, dto);
+        newOperationAuditMongo(clientDocument, OperationEnum.UPDATE.getValue());
         return convertDocumentToDto(clientDocument);
     }
 
@@ -148,6 +181,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientDocumentDto updateDocumentByPhone(String phone, ClientDocumentDto dto) {
         var clientDocument = findClientDocumentByPhone(phone);
         updateClientDocument(clientDocument, dto);
+        newOperationAuditMongo(clientDocument, OperationEnum.UPDATE.getValue());
         return convertDocumentToDto(clientDocument);
     }
 
@@ -172,5 +206,8 @@ public class ClientServiceImpl implements ClientService {
         clientDocument.setSecondPhone(newClientInfo.getSecondPhone());
         clientDocument.setBirthday(newClientInfo.getBirthday());
         clientMongoRepository.save(clientDocument);
+    }
+    private void newOperationAuditMongo(ClientDocument clientDocument, String operationType) {
+        auditingMongoRepository.save(new AuditDocument(null, clientDocument, now(), operationType));
     }
 }
