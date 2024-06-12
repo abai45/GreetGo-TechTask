@@ -1,6 +1,5 @@
 package GreetGo.CRUDtelephony.mapper;
 
-import GreetGo.CRUDtelephony.dto.BaseClientDto;
 import GreetGo.CRUDtelephony.dto.ClientEntityDto;
 import GreetGo.CRUDtelephony.entity.ClientEntity;
 import org.mapstruct.Mapper;
