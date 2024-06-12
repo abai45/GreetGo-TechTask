@@ -7,9 +7,10 @@ import GreetGo.CRUDtelephony.entity.ClientEntity;
 import GreetGo.CRUDtelephony.exception.ApiException;
 import GreetGo.CRUDtelephony.mapper.ClientDocumentMapper;
 import GreetGo.CRUDtelephony.mapper.ClientEntityMapper;
-import GreetGo.CRUDtelephony.repository.ClientMongoRepository;
-import GreetGo.CRUDtelephony.repository.ClientRepository;
+import GreetGo.CRUDtelephony.repository.mongodb.ClientMongoRepository;
+import GreetGo.CRUDtelephony.repository.psql.ClientRepository;
 import GreetGo.CRUDtelephony.service.ClientService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public void deleteClientByPhone(String phone) {
         clientRepository.deleteByPhone(phone);
     }
@@ -91,7 +93,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private void updateClientEntity(ClientEntity clientEntity, ClientEntityDto newClientInfo) {
-        BeanUtils.copyProperties(clientEntity,newClientInfo);
+        clientEntity.setFirstName(newClientInfo.getFirstName());
+        clientEntity.setLastName(newClientInfo.getLastName());
+        clientEntity.setPhone(newClientInfo.getPhone());
+        clientEntity.setSecondPhone(newClientInfo.getSecondPhone());
+        clientEntity.setBirthday(newClientInfo.getBirthday());
         clientRepository.save(clientEntity);
     }
 

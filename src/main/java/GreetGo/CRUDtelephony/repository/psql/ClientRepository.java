@@ -1,4 +1,4 @@
-package GreetGo.CRUDtelephony.repository;
+package GreetGo.CRUDtelephony.repository.psql;
 
 import GreetGo.CRUDtelephony.entity.ClientEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
