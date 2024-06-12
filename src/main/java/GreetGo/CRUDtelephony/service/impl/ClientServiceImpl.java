@@ -11,7 +11,6 @@ import GreetGo.CRUDtelephony.repository.mongodb.ClientMongoRepository;
 import GreetGo.CRUDtelephony.repository.psql.ClientRepository;
 import GreetGo.CRUDtelephony.service.ClientService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -167,7 +166,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private void updateClientDocument(ClientDocument clientDocument, ClientDocumentDto newClientInfo) {
-        BeanUtils.copyProperties(clientDocument,newClientInfo);
+        clientDocument.setFirstName(newClientInfo.getFirstName());
+        clientDocument.setLastName(newClientInfo.getLastName());
+        clientDocument.setPhone(newClientInfo.getPhone());
+        clientDocument.setSecondPhone(newClientInfo.getSecondPhone());
+        clientDocument.setBirthday(newClientInfo.getBirthday());
         clientMongoRepository.save(clientDocument);
     }
 }

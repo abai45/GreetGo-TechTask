@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface ClientMongoRepository extends MongoRepository<ClientDocument, String> {
     Optional<ClientDocument> findByPhone(String phone);
+    Optional<ClientDocument> findBySecondPhone(String phone);
     void deleteByPhone(String phone);
 }
