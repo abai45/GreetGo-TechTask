@@ -26,22 +26,22 @@ public class PsqlController {
         return ResponseEntity.ok().body(getResponse(request, Map.of("client", client), "Client created successfully", OK));
     }
     @GetMapping("/get")
-    public ResponseEntity<Response> getClientById(@RequestParam Long id, HttpServletRequest request) {
+    public ResponseEntity<Response> getClientById(@RequestParam("id") Long id, HttpServletRequest request) {
         var client = clientService.getClientById(id);
         return ResponseEntity.ok().body(getResponse(request, Map.of("client", client), "Client Info Retrieved", OK));
     }
     @GetMapping("/get/phone")
-    public ResponseEntity<Response> getClientByPhone(@RequestParam String phone, HttpServletRequest request) {
+    public ResponseEntity<Response> getClientByPhone(@RequestParam("phone") String phone, HttpServletRequest request) {
         var client = clientService.getClientByPhone(phone);
         return ResponseEntity.ok().body(getResponse(request, Map.of("client", client), "Client Info Retrieved", OK));
     }
     @PostMapping("/delete")
-    public ResponseEntity<Response> deleteClientById(@RequestParam Long id, HttpServletRequest request) {
+    public ResponseEntity<Response> deleteClientById(@RequestParam("id") Long id, HttpServletRequest request) {
         clientService.deleteClientById(id);
         return ResponseEntity.ok().body(getResponse(request, emptyMap(), "Client was deleted", OK));
     }
     @PostMapping("/delete/phone")
-    public ResponseEntity<Response> deleteClientByPhone(@RequestParam String phone, HttpServletRequest request) {
+    public ResponseEntity<Response> deleteClientByPhone(@RequestParam("phone")String phone, HttpServletRequest request) {
         clientService.deleteClientByPhone(phone);
         return ResponseEntity.ok().body(getResponse(request, emptyMap(), "Client was deleted", OK));
     }
@@ -51,12 +51,12 @@ public class PsqlController {
         return ResponseEntity.ok().body(getResponse(request, Map.of("clients", clients), "All Clients Retrieved", OK));
     }
     @PostMapping("/update")
-    public ResponseEntity<Response> updateClientById(@RequestParam Long id, @RequestBody ClientEntityDto clientEntity, HttpServletRequest request) {
+    public ResponseEntity<Response> updateClientById(@RequestParam("id") Long id, @RequestBody ClientEntityDto clientEntity, HttpServletRequest request) {
         var client = clientService.updateClientById(id, clientEntity);
         return ResponseEntity.ok().body(getResponse(request, Map.of("client", client), "Client Info Updated", OK));
     }
     @PostMapping("/update/phone")
-    public ResponseEntity<Response> updateClientByPhone(@RequestParam String phone, @RequestBody ClientEntityDto clientEntity, HttpServletRequest request) {
+    public ResponseEntity<Response> updateClientByPhone(@RequestParam("phone") String phone, @RequestBody ClientEntityDto clientEntity, HttpServletRequest request) {
         var client = clientService.updateClientByPhone(phone, clientEntity);
         return ResponseEntity.ok().body(getResponse(request, Map.of("client", client), "Client Info Updated", OK));
     }
