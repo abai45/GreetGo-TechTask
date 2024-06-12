@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ClientService {
     //PostgreSql controller methods
+    ClientEntityDto createClient(ClientEntityDto dto);
     ClientEntityDto getClientById(Long id);
     ClientEntityDto getClientByPhone(String phone);
     void deleteClientById(Long id);
@@ -16,6 +17,7 @@ public interface ClientService {
     ClientEntityDto updateClientByPhone(String phone, ClientEntityDto dto);
 
     //MongoDb controller methods
+    ClientDocumentDto createClient(ClientDocumentDto dto);
     ClientDocumentDto getDocumentById(String id);
     ClientDocumentDto getDocumentByPhone(String phone);
     void deleteDocumentById(String id);

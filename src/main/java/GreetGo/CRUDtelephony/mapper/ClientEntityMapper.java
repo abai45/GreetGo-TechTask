@@ -8,6 +8,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface ClientEntityMapper {
     ClientEntityMapper INSTANCE = Mappers.getMapper(ClientEntityMapper.class);
-    BaseClientDto toDto(ClientEntity clientEntity);
+    ClientEntityDto toDto(ClientEntity clientEntity);
     ClientEntity toEntity(ClientEntityDto clientEntityDto);
 }
