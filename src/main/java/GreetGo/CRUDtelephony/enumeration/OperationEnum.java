@@ -4,7 +4,7 @@ public enum OperationEnum {
     CREATE("Create"),
     READ("Read"),
     UPDATE("Update"),
-    DELETE("delete");
+    DELETE("Delete");
     private final String value;
     OperationEnum(String value) {
         this.value = value;

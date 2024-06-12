@@ -9,19 +9,22 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "audit")
 public class AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", referencedColumnName = "id", nullable = false)
     private ClientEntity clientEntity;
+
     private LocalDateTime date;
     private String operationType;
-
 }
+

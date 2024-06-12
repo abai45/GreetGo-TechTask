@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,4 +25,6 @@ public class ClientEntity extends Auditable{
     private String phone;
     private String secondPhone;
     private String birthday;
+    @OneToMany(mappedBy = "clientEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AuditEntity> audits = new ArrayList<>();
 }

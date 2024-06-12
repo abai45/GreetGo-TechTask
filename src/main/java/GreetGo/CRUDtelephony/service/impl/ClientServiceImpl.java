@@ -62,17 +62,13 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void deleteClientById(Long id) {
-        var clientEntity = findClientEntityById(id);
         clientRepository.deleteById(id);
-        newOperationAudit(clientEntity, OperationEnum.DELETE.getValue());
     }
 
     @Override
     @Transactional
     public void deleteClientByPhone(String phone) {
-        var clientEntity = findClientEntityByPhone(phone);
         clientRepository.deleteByPhone(phone);
-        newOperationAudit(clientEntity, OperationEnum.DELETE.getValue());
     }
 
     @Override
@@ -152,14 +148,14 @@ public class ClientServiceImpl implements ClientService {
     public void deleteDocumentById(String id) {
         var clientDocument = findClientDocumentById(id);
         clientMongoRepository.deleteById(id);
-        newOperationAuditMongo(clientDocument, OperationEnum.DELETE.getValue());
+        auditingMongoRepository.deleteAllByClientDocument(clientDocument);
     }
 
     @Override
     public void deleteDocumentByPhone(String phone) {
         var clientDocument = findClientDocumentByPhone(phone);
         clientMongoRepository.deleteByPhone(phone);
-        newOperationAuditMongo(clientDocument, OperationEnum.DELETE.getValue());
+        auditingMongoRepository.deleteAllByClientDocument(clientDocument);
     }
 
     @Override
