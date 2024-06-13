@@ -2,7 +2,6 @@ package GreetGo.CRUDtelephony.controller;
 
 import GreetGo.CRUDtelephony.domain.Response;
 import GreetGo.CRUDtelephony.dto.ClientDocumentDto;
-import GreetGo.CRUDtelephony.dto.ClientEntityDto;
 import GreetGo.CRUDtelephony.service.ClientService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +46,13 @@ public class MongoDBController {
         return ResponseEntity.ok().body(getResponse(request, emptyMap(), "Client was deleted", OK));
     }
     @GetMapping
-    public ResponseEntity<Response> getDocumentById(@RequestParam int limit, @RequestParam int offset, HttpServletRequest request) {
+    public ResponseEntity<Response> getDocumentById(
+            @RequestParam(name = "limit", defaultValue = "10") int limit,
+            @RequestParam(name = "offset", defaultValue = "10") int offset, HttpServletRequest request) {
         var clients = clientService.getAllDocuments(limit,offset);
         return ResponseEntity.ok().body(getResponse(request, Map.of("clients", clients), "All Clients Retrieved", OK));
     }
+
     @PostMapping("/update")
     public ResponseEntity<Response> updateDocumentById(@RequestParam("id") String id, @RequestBody ClientDocumentDto documentDto, HttpServletRequest request) {
         var client = clientService.updateDocumentById(id, documentDto);

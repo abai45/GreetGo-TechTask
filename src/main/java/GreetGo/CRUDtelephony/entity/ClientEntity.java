@@ -15,14 +15,19 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="clients")
+@Table(name="clients", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "phone"),
+        @UniqueConstraint(columnNames = "secondPhone")
+})
 public class ClientEntity extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
     private String lastName;
+    @Column(unique = true)
     private String phone;
+    @Column(unique = true)
     private String secondPhone;
     private String birthday;
     @OneToMany(mappedBy = "clientEntity", cascade = CascadeType.ALL, orphanRemoval = true)
